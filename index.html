@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>ডা. রহমানের চেম্বার</title>
+<link href="https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#f4f8f8;--card:#fff;--ink:#12303a;--muted:#5b747c;--teal:#0f766e;--mint:#dff0ee;--line:#d3e3e2;--wa:#1da851}
+*{box-sizing:border-box}
+body{margin:0;font-family:"Hind Siliguri",system-ui,sans-serif;background:var(--bg);color:var(--ink);line-height:1.6}
+header{background:var(--ink);color:#fff;padding:36px 20px 30px}
+.wrap{max-width:720px;margin:0 auto;padding:0 16px}
+header .wrap{padding:0}
+h1{margin:0;font-size:2rem;font-weight:700}
+.sub{margin:4px 0 0;color:#b9d3d6}
+main{padding:20px 0 48px}
+h2{font-size:1.25rem;margin:28px 0 12px}
+.today{background:var(--teal);color:#fff;border-radius:14px;padding:16px 18px;margin-top:-22px;box-shadow:0 6px 18px rgba(15,118,110,.25)}
+.today b{font-size:1.1rem}
+.card{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:14px 16px;margin-bottom:10px}
+.card h3{margin:0 0 2px;font-size:1.05rem}
+.days{display:flex;flex-wrap:wrap;gap:6px;margin:8px 0}
+.days span{background:var(--mint);color:var(--teal);border-radius:6px;padding:1px 10px;font-size:.92rem;font-weight:500}
+.days span.on{background:var(--teal);color:#fff}
+.meta{color:var(--muted);margin:0;font-size:.95rem}
+.meta a{color:var(--teal)}
+form{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:16px}
+label{display:block;font-weight:500;margin:12px 0 4px}
+label:first-child{margin-top:0}
+input,select{width:100%;font:inherit;padding:10px 12px;border:1px solid #b7cccb;border-radius:8px;background:#fff;color:var(--ink)}
+input:focus,select:focus,button:focus-visible{outline:3px solid #7cc7bf;outline-offset:1px}
+.row{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+button{margin-top:18px;width:100%;font:inherit;font-weight:700;font-size:1.05rem;padding:13px;border:0;border-radius:10px;background:var(--wa);color:#fff;cursor:pointer}
+.note{color:var(--muted);font-size:.9rem;margin:10px 0 0}
+footer{text-align:center;color:var(--muted);font-size:.85rem;padding-bottom:30px}
+</style>
+</head>
+<body>
+<header><div class="wrap">
+  <h1 id="dname"></h1>
+  <p class="sub" id="dinfo"></p>
+</div></header>
+
+<main class="wrap">
+  <div class="today" id="today"></div>
+
+  <h2>কবে কোথায় বসেন</h2>
+  <div id="chambers"></div>
+
+  <h2>হোয়াটসঅ্যাপে সিরিয়াল নিন</h2>
+  <form id="f">
+    <label for="name">রোগীর নাম</label>
+    <input id="name" required autocomplete="name">
+    <div class="row">
+      <div><label for="age">বয়স</label><input id="age" type="number" min="0" max="120" required></div>
+      <div><label for="phone">ফোন নম্বর</label><input id="phone" type="tel" inputmode="numeric" required></div>
+    </div>
+    <label for="ch">চেম্বার</label>
+    <select id="ch"></select>
+    <label for="dt">তারিখ</label>
+    <select id="dt"></select>
+    <label for="prob">সমস্যা (সংক্ষেপে, ঐচ্ছিক)</label>
+    <input id="prob">
+    <button type="submit">হোয়াটসঅ্যাপে সিরিয়াল পাঠান</button>
+    <p class="note">বাটনে চাপলে হোয়াটসঅ্যাপ খুলবে এবং তথ্য লেখা মেসেজ তৈরি থাকবে। শুধু "Send" চাপুন। সিরিয়াল নম্বর নিশ্চিত করে ডাক্তারের অফিস উত্তর দেবে।</p>
+  </form>
+</main>
+<footer>জরুরি অবস্থায় নিকটস্থ হাসপাতালে যান।</footer>
+
+<script>
+/* ====== শুধু এই অংশটুকু নিজের তথ্য দিয়ে বদলান ====== */
+const DOCTOR = {
+  name: "ডা. আব্দুর রহমান",
+  info: "এমবিবিএস, এফসিপিএস (মেডিসিন) • মেডিসিন ও ডায়াবেটিস বিশেষজ্ঞ",
+  whatsapp: "8801XXXXXXXXX"   // দেশের কোড সহ, + বা শূন্য ছাড়া। যেমন 8801712345678
+};
+// days: 0=রবি, 1=সোম, 2=মঙ্গল, 3=বুধ, 4=বৃহস্পতি, 5=শুক্র, 6=শনি
+const CHAMBERS = [
+  { name: "সিটি কেয়ার ক্লিনিক", place: "রোড ৫, ধানমন্ডি, ঢাকা", days: [6,0,1], time: "বিকাল ৫:০০ – রাত ৯:০০", map: "" },
+  { name: "মেডিলাইফ ডায়গনস্টিক", place: "কোর্ট রোড, ময়মনসিংহ", days: [3,4], time: "সকাল ১০:০০ – দুপুর ২:০০", map: "" }
+];
+/* ================================================== */
+
+const DAYS = ["রবি","সোম","মঙ্গল","বুধ","বৃহস্পতি","শুক্র","শনি"];
+const $ = id => document.getElementById(id);
+const bn = n => String(n).replace(/\d/g, d => "০১২৩৪৫৬৭৮৯"[d]);
+
+$("dname").textContent = DOCTOR.name;
+$("dinfo").textContent = DOCTOR.info;
+document.title = DOCTOR.name + " এর চেম্বার";
+
+const todayIdx = new Date().getDay();
+const openToday = CHAMBERS.filter(c => c.days.includes(todayIdx));
+$("today").innerHTML = openToday.length
+  ? "<b>আজ (" + DAYS[todayIdx] + "বার) বসছেন</b><br>" + openToday.map(c => c.name + ", " + c.time).join("<br>")
+  : "<b>আজ চেম্বার বন্ধ</b><br>নিচে পরবর্তী দিনগুলো দেখুন।";
+
+$("chambers").innerHTML = CHAMBERS.map(c => `
+  <div class="card">
+    <h3>${c.name}</h3>
+    <div class="days">${DAYS.map((d,i) => c.days.includes(i) ? `<span class="${i===todayIdx?'on':''}">${d}</span>` : "").join("")}</div>
+    <p class="meta">${c.time}</p>
+    <p class="meta">${c.place}${c.map ? ` • <a href="${c.map}" target="_blank" rel="noopener">ম্যাপ দেখুন</a>` : ""}</p>
+  </div>`).join("");
+
+$("ch").innerHTML = CHAMBERS.map((c,i) => `<option value="${i}">${c.name}</option>`).join("");
+
+function fillDates(){
+  const c = CHAMBERS[$("ch").value], out = [];
+  const d = new Date();
+  for (let i = 0; i < 21 && out.length < 6; i++){
+    if (c.days.includes(d.getDay()))
+      out.push(`<option value="${d.getDay()}|${d.getDate()}|${d.getMonth()+1}">${DAYS[d.getDay()]}বার, ${bn(d.getDate())}/${bn(d.getMonth()+1)}${i===0?" (আজ)":""}</option>`);
+    d.setDate(d.getDate() + 1);
+  }
+  $("dt").innerHTML = out.join("");
+}
+$("ch").addEventListener("change", fillDates);
+fillDates();
+
+$("f").addEventListener("submit", e => {
+  e.preventDefault();
+  const c = CHAMBERS[$("ch").value];
+  const dateText = $("dt").selectedOptions[0].textContent;
+  let msg = `সিরিয়ালের জন্য অনুরোধ\n\nরোগীর নাম: ${$("name").value.trim()}\nবয়স: ${$("age").value}\nফোন: ${$("phone").value.trim()}\nচেম্বার: ${c.name}\nতারিখ: ${dateText}`;
+  if ($("prob").value.trim()) msg += `\nসমস্যা: ${$("prob").value.trim()}`;
+  window.open("https://wa.me/" + DOCTOR.whatsapp + "?text=" + encodeURIComponent(msg), "_blank");
+});
+</script>
+</body>
+</html>
